@@ -6,6 +6,9 @@ import requests
 from json import JSONDecodeError
 from .models import user
 from rest_framework.parsers import JSONParser
+from user.serializers import insta_serializer
+from django.views.decorators.csrf import csrf_exempt
+
 
 BASE_URI = 'http://127.0.0.1:8000/'
 GOOGLE_CALLBACK_URI = BASE_URI + 'api/user/google/callback/'
@@ -42,3 +45,27 @@ def total_auth(email):
     except user.DoesNotExist:
         emailRegistration = user.objects.create(email = email)
         return HttpResponse('created new')
+
+@csrf_exempt
+def insta(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        search_index = data['id']
+        obj = user.objects.get(id = search_index)
+        
+        serializer = insta_serializer(obj, data = data)
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse("Good")
+        return HttpResponse("No")
+
+    if request.method == 'DELETE':
+
+        data = JSONParser().parse(request)
+        search_index = data['id']
+        obj = user.objects.get(id = search_index)
+        obj.insta = None
+        obj.save()
+        
+
+
