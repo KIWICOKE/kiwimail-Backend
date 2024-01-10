@@ -20,7 +20,7 @@ def google_login(request):
     return redirect(f"https://accounts.google.com/o/oauth2/v2/auth?client_id=456503625210-felrh2s9m5ti9ik7q23bhersrrvm86g1.apps.googleusercontent.com&response_type=code&redirect_uri={GOOGLE_CALLBACK_URI}&scope={scope}")
 
 def google_callback(request):
-    client_id = "456503625210-felrh2s9m5ti9ik7q23bhersrrvm86g1.apps.googleusercontent.com" \
+    client_id = "456503625210-felrh2s9m5ti9ik7q23bhersrrvm86g1.apps.googleusercontent.com" 
     client_secret = "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" 
     code = request.GET.get('code')
     token_req = requests.post(f"https://oauth2.googleapis.com/token?client_id={client_id}&client_secret={client_secret}&code={code}&grant_type=authorization_code&redirect_uri={GOOGLE_CALLBACK_URI}&state={state}")
