@@ -15,13 +15,13 @@ GOOGLE_CALLBACK_URI = BASE_URI + 'api/user/google/callback/'
 state = os.environ.get("STATE")
 
 def google_login(request):
-    scope = "https://www.googleapis.com/auth/userinfo.email"
+    scope = "https://www.googleapis.com/auth/userinfo.email" 
     client_id = "456503625210-felrh2s9m5ti9ik7q23bhersrrvm86g1.apps.googleusercontent.com"
     return redirect(f"https://accounts.google.com/o/oauth2/v2/auth?client_id=456503625210-felrh2s9m5ti9ik7q23bhersrrvm86g1.apps.googleusercontent.com&response_type=code&redirect_uri={GOOGLE_CALLBACK_URI}&scope={scope}")
 
 def google_callback(request):
-    client_id = "456503625210-felrh2s9m5ti9ik7q23bhersrrvm86g1.apps.googleusercontent.com"
-    client_secret = "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"
+    client_id = "456503625210-felrh2s9m5ti9ik7q23bhersrrvm86g1.apps.googleusercontent.com" \
+    client_secret = "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" 
     code = request.GET.get('code')
     token_req = requests.post(f"https://oauth2.googleapis.com/token?client_id={client_id}&client_secret={client_secret}&code={code}&grant_type=authorization_code&redirect_uri={GOOGLE_CALLBACK_URI}&state={state}")
     token_req_json = token_req.json()
@@ -39,10 +39,10 @@ def google_callback(request):
 
 def total_auth(email):
     try:
-        userCheck = user.objects.get(email = email)
+        userCheck = user.objects.get(email = email) #user라는 모델속, 전달받은 email값이 이미 존재하는지 확인한다
         return HttpResponse('existing')
 
-    except user.DoesNotExist:
+    except user.DoesNotExist: #user가 존재하지 않는다면, user라는 모델속에 새 email을 등록한다.
         emailRegistration = user.objects.create(email = email)
         return HttpResponse('created new')
 
