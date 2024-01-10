@@ -46,6 +46,9 @@ def total_auth(email):
         emailRegistration = user.objects.create(email = email)
         return HttpResponse('created new')
 
+def main(request):
+    return HttpResponse("Welcome")
+
 @csrf_exempt
 def insta(request):
     if request.method == 'POST':
