@@ -10,7 +10,7 @@ from user.serializers import insta_serializer
 from django.views.decorators.csrf import csrf_exempt
 
 
-BASE_URI = 'http://127.0.0.1:8000/'
+BASE_URI = 'http://kiwicoke.com:8000/'
 GOOGLE_CALLBACK_URI = BASE_URI + 'api/user/google/callback/'
 state = os.environ.get("STATE")
 
