@@ -1,4 +1,6 @@
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 
 from letter.models import Message
@@ -10,19 +12,33 @@ from user.models import user
 # 편지 작성
 @method_decorator(login_required, 'get')
 @method_decorator(login_required, 'post')
-class MessageCreateView(CreateView):
+class MessageCreateListView(CreateView):
     model = Message
-    form_class = MessageCreationForm
-    template_name = 'letters/create.html'
+    # 편지 목록 불러오기
+    def get(self, request, *args, **kwargs):
+        # GET 요청에 대한 처리 (ListView)
+        user_messages = Message.objects.filter(writer=request.user).order_by('-created_at')
+        # return render(request, self.template_name, {'messages': user_messages})
+        response_data = [{'content': Message.content, 'writer':Message.writer, 'receiver':Message.receiver } for Message in user_messages]
+        return JsonResponse(response_data, safe=False)
 
-    def form_valid(self, form):
-        temp_message=form.save(commit=False)
-        temp_message.writer=self.request.user
-        temp_message.save()
-        return super().form_valid(form)
+    # 편지 작성하기
+    def post(self, request, *args, **kwargs):
+        # POST 요청에 대한 처리 (CreateView)
+        form = MessageCreationForm(request.POST)
+        if form.is_valid():
+            temp_message = form.save(commit=False)
+            temp_message.writer = request.user
+            temp_message.save()
+            return render(request, self.template_name, {'messages': Message.objects.all()})
 
-        def get_success_url(self):
-            return reverse('letter:list', kwargs={'pk': self.object.pk})
+        # form이 유효하지 않은 경우
+        return render(request, self.template_name, {'form': form})
+
+class MessageDetailView(DetailView):
+    model = Message
+    context_object_name = 'target_message'
+    template_name = 'letter/detail.html'
 
 # 편지 열람
 class MessageDetailView(DetailView):
@@ -30,8 +46,3 @@ class MessageDetailView(DetailView):
     context_object_name = 'target_message'
     template_name = 'letter/detail.html'
 
-class MessageListView(ListView):
-    model = user
-    context_object_name = 'target_user'
-    template_name = 'letter/list.html'
-    ordering = ['-created_at']
