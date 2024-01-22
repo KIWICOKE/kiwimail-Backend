@@ -1,22 +1,48 @@
-# views.py
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+
 from letter.models import Message
+from django.views.generic import CreateView, DetailView, ListView
+from django.urls import reverse
+from letter.forms import MessageCreationForm
+from user.models import user
 
-def write(request):  # 편지 작성하기 기능
-    if request.method == "POST":
-        writer=request.POST['writer']
-        receiver=request.POST['receiver']
-        content=request.POST['content']
-        writing_pad=request.POST['writing_pad']
-        new_message=Message(writer=writer, receiver=receiver, content=content, writing_pad=writing_pad)
-        new_message.save()
-        return HttpResponse("작성 후에는 수정/삭제가 불가능합니다.")
-    else:  # 편지목록 불러오기
-        messages={'messages':Message.objects.all()}
-        return render(request, 'list.html', messages)
+# 편지 작성
+@method_decorator(login_required, 'get')
+@method_decorator(login_required, 'post')
+class MessageCreateListView(CreateView):
+    model = Message
+    # 편지 목록 불러오기
+    def get(self, request, *args, **kwargs):
+        # GET 요청에 대한 처리 (ListView)
+        user_messages = Message.objects.filter(writer=request.user).order_by('-created_at')
+        # return render(request, self.template_name, {'messages': user_messages})
+        response_data = [{'content': Message.content, 'writer':Message.writer, 'receiver':Message.receiver } for Message in user_messages]
+        return JsonResponse(response_data, safe=False)
 
-def letter(request):  # 편지 확인하기
-    user = request.user
-    messages=Message.objects.filter(receiver=user).order_by('-created_at')
-    return render(request, 'letter.html', {'letters':messages})
+    # 편지 작성하기
+    def post(self, request, *args, **kwargs):
+        # POST 요청에 대한 처리 (CreateView)
+        form = MessageCreationForm(request.POST)
+        if form.is_valid():
+            temp_message = form.save(commit=False)
+            temp_message.writer = request.user
+            temp_message.save()
+            return render(request, self.template_name, {'messages': Message.objects.all()})
+
+        # form이 유효하지 않은 경우
+        return render(request, self.template_name, {'form': form})
+
+class MessageDetailView(DetailView):
+    model = Message
+    context_object_name = 'target_message'
+    template_name = 'letter/detail.html'
+
+# 편지 열람
+class MessageDetailView(DetailView):
+    model = Message
+    context_object_name = 'target_message'
+    template_name = 'letter/detail.html'
+

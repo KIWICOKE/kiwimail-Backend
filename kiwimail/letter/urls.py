@@ -1,8 +1,10 @@
 from django.urls import path
-from letter import views
-from . import views
+from django.views.generic import TemplateView
+from letter.views import MessageCreateListView, MessageDetailView
+
+app_name = 'letter'
 
 urlpatterns = [
-    path('', views.write, name='write'),
-    path('<int:post_id>/', views.letter, name='check'),
+    path('', MessageCreateListView.as_view(), name='create_or_list'),
+    path('<int:pk>/', MessageDetailView.as_view(template_name='letter/detail.html'), name='detail'),
 ]
