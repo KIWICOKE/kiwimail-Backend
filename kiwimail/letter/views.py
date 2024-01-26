@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 
 from letter.models import Message
-from django.views.generic import CreateView, DetailView, ListView
+from django.views.generic import CreateView, DetailView
 from django.urls import reverse
 from letter.forms import MessageCreationForm
 from user.models import user
@@ -12,8 +12,8 @@ import uuid
 from django.views import View
 
 # 편지 작성
-# @method_decorator(login_required, 'get')
-# @method_decorator(login_required, 'post')
+@method_decorator(login_required, 'get')
+@method_decorator(login_required, 'post')
 class MessageCreateListView(CreateView):
     model = Message
     # 편지 목록 불러오기
