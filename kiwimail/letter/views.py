@@ -45,5 +45,3 @@ class MessageDetailView(DetailView):
     context_object_name = 'target_message'
     template_name = 'letter/detail.html'
     pk_url_kwarg = 'post_id'
-
-
