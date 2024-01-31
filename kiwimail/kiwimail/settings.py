@@ -23,8 +23,8 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['13.209.43.211','.kiwicoke.com','3.35.143.159']
-
+# ALLOWED_HOSTS = ['13.209.43.211','.kiwicoke.com','3.35.143.159']
+ALLOWED_HOSTS = []
 
 # Application definition
 
