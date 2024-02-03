@@ -1,10 +1,23 @@
-import os, json
+import os, json, environ
 from pathlib import Path
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+# Set the project base directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+os.environ.get('AWS_BUCKET') # 기본 사용방법
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-secret_file = os.path.join(BASE_DIR, 'secrets.json')
+# secret_file = os.path.join(BASE_DIR, 'secrets.json')
 with open(secret_file) as f:
     secrets = json.loads(f.read())
 def get_secret(setting):
